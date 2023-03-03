@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pv-90-full
+  namespace: openshift-user-workload-monitoring
+  labels:
+    openshift.io/prometheus-rule-evaluation-scope: leaf-prometheus
+spec:
+  groups:
+  - name: custom-storage
+    rules:
+    - alert: PValmostFull
+      expr: 100-(100*(kubelet_volume_stats_available_bytes/kubelet_volume_stats_capacity_bytes))>90
+      labels:
+        severity: 'critical'
+        notification: 'slack'
+      annotations:
+        summary: 'PV 90% full'

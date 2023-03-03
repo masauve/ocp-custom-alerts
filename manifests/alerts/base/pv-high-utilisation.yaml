@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: pv-high-utilisation
+  namespace: openshift-user-workload-monitoring
+  labels:
+    openshift.io/prometheus-rule-evaluation-scope: leaf-prometheus
+spec:
+  groups:
+  - name: custom-storage
+    rules:
+    - alert: LowPvCapacity
+      expr: kubelet_volume_stats_available_bytes<1073741824
+      labels:
+        severity: 'warning'
+        notification: 'slack'
+      annotations:
+        summary: 'PV available capacity < 1Gb'
